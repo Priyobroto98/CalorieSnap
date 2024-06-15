@@ -13,7 +13,7 @@ model_name = "google/vit-base-patch16-224"
 feature_extractor = ViTFeatureExtractor.from_pretrained(model_name)
 model = ViTForImageClassification.from_pretrained(model_name)
 
-api_key='API_KEY'
+api_key='Zt5p7rq6fghe+p+28A+rng==lWRtPFGxM6fbQsHj'
 
 def identify_image(image_path):
     """Identify the food item in the image."""
