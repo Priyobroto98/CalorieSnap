@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Identification and Nutrition Info</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 500;
+        }
+        p {
+            font-size: 1.2em;
+        }
+        #container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 20px;
+        }
+        #upload-form {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 50px 60px;
+            width: 40%;
+            max-width: 600px;
+            text-align: center;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 20px 0;
+            display: inline-block;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 20px;
+            display: none; /* Initially hide the button */
+        }
+        button:hover, label:hover {
+            opacity: 0.9;
+        }
+        #nutrition-info {
+            display: none;
+            text-align: left;
+            width: 50%;
+            max-width: 700px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+        #image-preview {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Calorie Counter</h1>
+    </header>
+
+    <div id="container">
+        <form id="upload-form">
+            <img id="image-preview" alt="Image Preview">
+            <input type="file" id="file-input" accept="image/*" onchange="previewImage(event)">
+            <label for="file-input">Choose File</label>
+            <button type="button" id="submit-button" onclick="submitForm()">Submit</button>
+        </form>
+        <div id="nutrition-info"></div>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            const preview = document.getElementById('image-preview');
+
+            reader.onload = function() {
+                preview.src = reader.result;
+                preview.style.display = 'block';
+                document.getElementById('submit-button').style.display = 'inline-block'; // Show submit button
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none'; // Hide image preview if no file chosen
+                document.getElementById('submit-button').style.display = 'none'; // Hide submit button if no file chosen
+            }
+        }
+
+        async function submitForm() {
+            const fileInput = document.getElementById('file-input');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            const nutritionInfo = document.getElementById('nutrition-info');
+            nutritionInfo.innerHTML = data.nutrition_info;
+            nutritionInfo.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
